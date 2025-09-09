@@ -31,7 +31,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_PAT }}
         run: |
-          python scan_npm_malware.py --org FathAllaTechOps --verbose
+          python scan_npm_malware.py --org el3bd-devops --verbose
 
       - name: Upload findings
         if: failure()
