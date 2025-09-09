@@ -1,0 +1,41 @@
+name: Scan Org for Malicious npm Versions
+
+on:
+  push:
+    branch:
+      - main
+  workflow_dispatch:   # Manual run
+  schedule:
+    - cron: "0 3 * * *"   # Daily at 03:00 UTC
+
+jobs:
+  scan:
+    name: Scan all repos
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout scanner repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # no external deps required; stdlib only
+
+      - name: Run scanner
+        env:
+          GITHUB_TOKEN: ${{ secrets.ORG_PAT }}
+        run: |
+          python scan_npm_malware.py --org YOUR_ORG --verbose
+
+      - name: Upload findings
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-results
+          path: findings.json
