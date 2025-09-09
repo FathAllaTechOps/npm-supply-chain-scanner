@@ -34,8 +34,10 @@ jobs:
           python scan_npm_malware.py --org el3bd-devops --verbose
 
       - name: Upload findings
-        if: failure()
+        if: always()        # upload even on success
         uses: actions/upload-artifact@v4
         with:
-          name: scan-results
-          path: findings.json
+          name: npm-malware-scan
+          path: |
+            findings.json
+            findings.csv
